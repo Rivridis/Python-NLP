@@ -3,18 +3,26 @@ import config
 import openai
 import json
 import bs4
+import requests
 
 query = input("Enter Query")
 
 sites = []
 text = ""
 
-for url in search(query, tld='com', lang='en', num=10, start=0, stop=5, pause=2.0):
+for url in search(query, tld='com', lang='en', num=10, start=0, stop=3, pause=2.0):
     sites.append(url)
 
+for i in sites:
+  res = requests.get(i)
+  soup = bs4.BeautifulSoup(res.content, "html.parser")
+  A = soup(text=lambda t: "{}".format(query) in t.text)
+  for i in A:
+    text = text+i
 
+print(text)
 
-openai.api_key = config.api_key
+#openai.api_key = config.api_key
 
 response = openai.Completion.create(
   model="text-davinci-003",
